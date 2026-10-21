@@ -1,6 +1,6 @@
 from dotenv import load_dotenv
 from typing import TypedDict, Annotated, Optional, Literal
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ValidationError
 from langchain_google_genai import ChatGoogleGenerativeAI
 
 load_dotenv()
@@ -26,6 +26,14 @@ elif PART == "B":   # Pydantic: returns an object, validates types and ranges
         urgency: int = Field(ge=1, le=5, description="1 (low) to 5 (critical)")
         order_id: Optional[str] = Field(default=None, description="Order ID if mentioned, else null")
 
+    # Validation test (no API call): Pydantic should reject urgency=9
+    try:
+        Ticket(category="billing", urgency=9)
+    except ValidationError as e:
+        print("Validation error caught:")
+        print(e)
+    print("-----")
+
     result = model.with_structured_output(Ticket).invoke(TEXT)
     print(type(result), result)
     print("Urgency:", result.urgency)
@@ -46,4 +54,3 @@ elif PART == "C":   # JSON schema: returns a dict
 
 else:
     print("PART must be exactly A, B or C")
-    Ticket(category="billing", urgency=9)
