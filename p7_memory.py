@@ -19,7 +19,7 @@ while True:
     q = input("You: ")
     if q.lower() == "exit":
         break
-    reply = chain.invoke({"chat_history": chat_history[-2:], "query": q})
+    reply = chain.invoke({"chat_history": chat_history, "query": q})
     chat_history.append(HumanMessage(content=q))
     chat_history.append(AIMessage(content=reply))
     print("AI:", reply)
